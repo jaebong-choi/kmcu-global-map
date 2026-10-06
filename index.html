@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>해외 프로그램 지도 | 계명문화대학교 국제처</title>
+<meta name="description" content="계명문화대학교 국제처 해외 프로그램(파란사다리, KMCU Dream 사다리, GS-L, 글로벌 현장학습, 아세안 TVET, K-Move 스쿨) 국가별 안내">
+<script>
+  // 테마를 그리기 전에 적용 (저장값 → 기기 설정)
+  var t; try { t = localStorage.getItem("theme"); } catch (e) {}
+  document.documentElement.dataset.theme = t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="logo" href="https://www.kmcu.ac.kr/" target="_blank" rel="noopener"><img src="https://www.kmcu.ac.kr/kr/_Landing/240826/_Img/toplogo.png" alt="계명문화대학교" width="229" height="47"></a>
+    <a class="site-name" href="#/" data-en="Overseas Programs Map">해외 프로그램 지도</a>
+    <nav class="util">
+      <a class="hide-sm" href="https://www.kmcu.ac.kr/global/" target="_blank" rel="noopener" data-en="KMCU International">국제처 홈페이지</a>
+      <button type="button" data-act="lang">ENG</button>
+      <button type="button" data-act="theme">다크 모드</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-title">
+    <h1 data-en="Overseas programs by country">국가별 해외 프로그램 안내</h1>
+    <p data-en="Overseas study, training and job programs run by the KMCU Office of International Affairs. Select a country or program to see funding, partner institutions and past participants.">계명문화대학교 국제처에서 운영하는 해외 연수·실습·취업 프로그램입니다. 국가나 프로그램을 선택하면 지원 내용, 협약기관, 파견 실적을 확인할 수 있습니다.</p>
+  </div>
+
+  <section class="explore" id="explore">
+    <div class="toolbar">
+      <label for="progSelect" data-en="Program">프로그램</label>
+      <select id="progSelect"></select>
+    </div>
+    <div class="mapbox">
+      <aside class="panel" id="panel" aria-live="polite"></aside>
+      <div id="map" aria-label="해외 프로그램 지도"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 data-en="Programs by step">단계별 프로그램</h2>
+    <div class="table-wrap">
+      <table class="steps">
+        <thead><tr>
+          <th scope="col" data-en="Step">단계</th>
+          <th scope="col" data-en="Program">프로그램</th>
+          <th scope="col" data-en="Overview">내용</th>
+          <th scope="col" data-en="Funding">지원금</th>
+          <th scope="col" data-en="Countries">국가</th>
+        </tr></thead>
+        <tbody id="steps"></tbody>
+      </table>
+    </div>
+    <p class="note" data-en="※ Program details, funding and destinations may change depending on the university and local conditions. Check the recruitment notice on the KMCU International notice board before applying.">※ 프로그램 내용·지원금·파견국가는 학교 및 현지 상황에 따라 변동될 수 있습니다. 지원 전 국제처 공지사항의 모집공고를 꼭 확인하세요.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <strong data-en="Office of International Affairs, Keimyung College University">계명문화대학교 국제처</strong>
+    <p data-en="Welfare Hall 2F, 675 Dalseo-daero, Dalseo-gu, Daegu 42601<br>Counseling 053-589-7796 · Office 053-589-7794~5">(42601) 대구광역시 달서구 달서대로 675 복지관 2층<br>상담 053-589-7796 · 사무실 053-589-7794~5</p>
+    <p><a href="https://www.kmcu.ac.kr/global/?pCode=MN0000040" target="_blank" rel="noopener" data-en="Notices">공지사항</a> ·<a href="https://www.kmcu.ac.kr/global/" target="_blank" rel="noopener" data-en="KMCU International">국제처 홈페이지</a></p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="data.js"></script>
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
