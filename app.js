@@ -33,6 +33,8 @@
     } else if (act === "lang") {
       const next = EN ? "ko" : "en";
       store("lang", next); location.search = "?lang=" + next; // 현재 화면(hash)은 유지됨
+    } else if (act === "top") {
+      scrollTo({ top: 0, behavior: "smooth" });
     }
   });
 
@@ -63,24 +65,44 @@
   // 아메리카 대륙은 태평양 건너편(동쪽)에 그려지도록 경도 보정
   const W = ([lat, lng]) => [lat, lng < -30 ? lng + 360 : lng];
 
-  /* ---------- 단계별 프로그램 표 ---------- */
-  const groups = [
-    ...STEPS.map((s) => [`STEP ${s.n}`, s.title, PROGRAMS.filter((p) => p.step === s.n)]),
-    [tx("기타", "Other"), "", PROGRAMS.filter((p) => !p.step)],
-  ];
-  $("#steps").innerHTML = groups.map(([label, name, list]) => list.map((p, i) => `<tr>
-      ${i ? "" : `<th scope="rowgroup" rowspan="${list.length}">${label}<span>${esc(name)}</span></th>`}
-      <td><a href="${p.campus ? "#/c/kr" : "#/p/" + p.id}">${esc(p.name)}</a></td>
-      <td>${esc(p.tagline)}</td>
-      <td class="num">${esc(p.support || (p.campus ? tx("무료", "Free") : "-"))}</td>
-      <td>${p.campus ? tx("교내", "On campus") : p.countries.map((c) => esc(C[c].ko)).join(", ")}</td>
-    </tr>`).join("")).join("");
+  /* ---------- 숫자 띠 ---------- */
+  const destN = COUNTRIES.filter(isDest).length, pastN = COUNTRIES.filter((c) => c.status === "past").length;
+  const sentN = sum(historyRows(() => true)).toLocaleString();
+  $("#statProg").textContent = tx(`${PROGRAMS.length}개`, PROGRAMS.length);
+  $("#statCountry").textContent = tx(`${destN}개국`, destN);
+  $("#statSent").textContent = tx(`${sentN}명`, sentN);
+  $("#statPast").textContent = tx(`과거 파견 국가 ${pastN}개국 별도`, `Plus ${pastN} past destinations`);
 
-  /* ---------- 프로그램 선택 ---------- */
-  const sel = $("#progSelect");
-  sel.innerHTML = `<option value="">${tx("전체 보기", "All")}</option><option value="c/kr">${tx("교내 프로그램", "On-campus programs")}</option>` +
+  /* ---------- 단계별 프로그램 카드 + 탭 ---------- */
+  const href = (p) => (p.campus ? "#/c/kr" : "#/p/" + p.id);
+  $("#progCards").innerHTML = PROGRAMS.map((p) => `<a class="pcard s${p.step}" href="${href(p)}" data-step="${p.step}">
+      <div class="visual"><strong>${esc(p.name)}</strong>
+        <span class="flags">${p.countries.map((c) => `<img src="${flag(C[c], 80)}" alt="${esc(C[c].ko)}">`).join("")}</span>
+        <span class="plus" aria-hidden="true">+</span></div>
+      <div class="meta"><span class="tag">${p.step ? `STEP ${p.step} · ` : ""}${esc(stepName(p))}</span>${p.support ? `<b>${esc(p.support)}</b>` : ""}</div>
+      <p>${esc(p.tagline)}</p></a>`).join("");
+
+  const tabs = [["all", tx("전체", "All")], ...STEPS.map((s) => [String(s.n), `STEP ${s.n} ${s.title}`]), ["0", tx("기타", "Other")]];
+  $("#stepTabs").innerHTML = tabs.map(([k, label], i) => `<button type="button" data-tab="${k}" aria-pressed="${!i}"${i ? "" : ' class="on"'}>${esc(label)}</button>`).join("");
+  $("#stepTabs").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    $("#stepTabs").querySelectorAll("button").forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", x === b); });
+    document.querySelectorAll(".pcard").forEach((c) => (c.hidden = b.dataset.tab !== "all" && c.dataset.step !== b.dataset.tab));
+  });
+
+  /* ---------- 빠른 찾기 (프로그램 / 국가) ---------- */
+  const selP = $("#progSelect"), selC = $("#countrySelect");
+  selP.innerHTML = `<option value="">${tx("전체", "All")}</option><option value="c/kr">${tx("교내 프로그램", "On-campus programs")}</option>` +
     PROGRAMS.filter((p) => !p.campus).map((p) => `<option value="p/${p.id}">${esc(p.name)}</option>`).join("");
-  sel.addEventListener("change", () => (location.hash = "#/" + sel.value));
+  selC.innerHTML = `<option value="">${tx("전체", "All")}</option>` +
+    [C.kr, ...destsSorted(), ...COUNTRIES.filter((c) => c.status === "past")].map((c) => `<option value="c/${c.id}">${esc(c.ko)}</option>`).join("");
+  selP.addEventListener("change", () => (selC.value = ""));
+  selC.addEventListener("change", () => (selP.value = ""));
+  $("#quick").addEventListener("submit", (e) => {
+    e.preventDefault();
+    location.hash = "#/" + (selC.value || selP.value);
+    $("#explore").scrollIntoView({ behavior: "smooth" });
+  });
 
   /* ---------- 지도 ---------- */
   const map = L.map("map", { minZoom: 1, maxZoom: 12, zoomSnap: 0.25 }).setView([30, 120], 2);
@@ -228,7 +250,7 @@
     else if (kind === "p" && P[id] && !P[id].campus) showProgram(id);
     else showOverview();
     const key = `${kind}/${id}`;
-    sel.value = [...sel.options].some((o) => o.value === key) ? key : "";
+    [selP, selC].forEach((s) => (s.value = [...s.options].some((o) => o.value === key) ? key : ""));
     panel.scrollTop = 0;
     if ($("#explore").getBoundingClientRect().top < -60) $("#explore").scrollIntoView({ behavior: "smooth" });
   }

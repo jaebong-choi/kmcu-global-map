@@ -10,8 +10,7 @@
   var t; try { t = localStorage.getItem("theme"); } catch (e) {}
   document.documentElement.dataset.theme = t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -22,53 +21,67 @@
     <a class="logo" href="https://www.kmcu.ac.kr/" target="_blank" rel="noopener"><img src="logo.png" alt="계명문화대학교" width="229" height="47"></a>
     <a class="site-name" href="#/" data-en="Overseas Programs Map">해외 프로그램 지도</a>
     <nav class="util">
-      <a class="hide-sm" href="https://www.kmcu.ac.kr/global/" target="_blank" rel="noopener" data-en="KMCU International">국제처 홈페이지</a>
-      <button type="button" data-act="lang">ENG</button>
-      <button type="button" data-act="theme">다크 모드</button>
+      <a class="pill hide-sm" href="https://www.kmcu.ac.kr/global/" target="_blank" rel="noopener" data-en="KMCU International">국제처 홈페이지</a>
+      <button class="pill" type="button" data-act="lang">ENG</button>
+      <button class="pill" type="button" data-act="theme">다크 모드</button>
     </nav>
   </div>
 </header>
 
 <main>
-  <div class="page-title">
-    <h1 data-en="Overseas programs by country">국가별 해외 프로그램 안내</h1>
-    <p data-en="Overseas study, training and job programs run by the KMCU Office of International Affairs. Select a country or program to see funding, partner institutions and past participants.">계명문화대학교 국제처에서 운영하는 해외 연수·실습·취업 프로그램입니다. 국가나 프로그램을 선택하면 지원 내용, 협약기관, 파견 실적을 확인할 수 있습니다.</p>
-  </div>
-
-  <section class="explore" id="explore">
-    <div class="toolbar">
-      <label for="progSelect" data-en="Program">프로그램</label>
-      <select id="progSelect"></select>
+  <section class="hero inner">
+    <div class="hero-text">
+      <h1 data-en="Overseas programs<br>by country">국가별<br>해외 프로그램 안내</h1>
+      <p data-en="Overseas study, training and job programs run by the KMCU Office of International Affairs. Pick a program or country to see funding, partner institutions and past participants.">계명문화대학교 국제처에서 운영하는 해외 연수·실습·취업 프로그램입니다. 프로그램이나 국가를 선택하면 지원 내용, 협약기관, 파견 실적을 확인할 수 있습니다.</p>
     </div>
+    <form class="quick" id="quick">
+      <h2 data-en="Quick search">프로그램 빠른 찾기</h2>
+      <div class="quick-row">
+        <label class="field"><span data-en="Program">프로그램</span><select id="progSelect"></select></label>
+        <label class="field"><span data-en="Country">국가</span><select id="countrySelect"></select></label>
+        <button class="btn-go" type="submit" data-en="Search">검색</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="stats" aria-label="요약">
+    <div><span class="label" data-en="Programs">운영 프로그램</span><b id="statProg"></b><small data-en="On campus · abroad · transfer · cooperation">교내 · 해외 파견 · 진학 · 국제협력</small></div>
+    <div><span class="label" data-en="Countries">파견·협력 국가</span><b id="statCountry"></b><small id="statPast"></small></div>
+    <div><span class="label" data-en="Students sent">누적 파견 인원</span><b id="statSent"></b><small data-en="Paran · Dream Ladder · Field Training, 2014–2026">파란사다리·Dream 사다리·글로벌 현장학습 (2014~2026학년도)</small></div>
+  </section>
+
+  <section class="section inner" id="explore">
+    <h2 class="sec-title" data-en="Find on the map">지도에서 찾기</h2>
     <div class="mapbox">
       <aside class="panel" id="panel" aria-live="polite"></aside>
       <div id="map" aria-label="해외 프로그램 지도"></div>
     </div>
   </section>
 
-  <section class="section">
-    <h2 data-en="Programs by step">단계별 프로그램</h2>
-    <div class="table-wrap">
-      <table class="steps">
-        <thead><tr>
-          <th scope="col" data-en="Step">단계</th>
-          <th scope="col" data-en="Program">프로그램</th>
-          <th scope="col" data-en="Overview">내용</th>
-          <th scope="col" data-en="Funding">지원금</th>
-          <th scope="col" data-en="Countries">국가</th>
-        </tr></thead>
-        <tbody id="steps"></tbody>
-      </table>
-    </div>
+  <section class="section inner">
+    <h2 class="sec-title" data-en="Programs by step">단계별 프로그램</h2>
+    <div class="tabs" id="stepTabs" role="tablist"></div>
+    <div class="cards" id="progCards"></div>
     <p class="note" data-en="※ Program details, funding and destinations may change depending on the university and local conditions. Check the recruitment notice on the KMCU International notice board before applying.">※ 프로그램 내용·지원금·파견국가는 학교 및 현지 상황에 따라 변동될 수 있습니다. 지원 전 국제처 공지사항의 모집공고를 꼭 확인하세요.</p>
   </section>
 </main>
+
+<nav class="rail" aria-label="바로가기">
+  <a href="https://www.kmcu.ac.kr/global/?pCode=MN0000040" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4z"/></svg><span data-en="Notices">공지사항</span></a>
+  <a href="tel:0535897796">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h4l2 5-3 2a11 11 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 4 5a2 2 0 0 1 2-2z"/></svg><span data-en="Call">상담 전화</span></a>
+  <a href="https://www.kmcu.ac.kr/global/" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7v9H3z"/><path d="M9 20v-6h6v6"/></svg><span data-en="KMCU Intl.">국제처</span></a>
+  <button type="button" data-act="top" aria-label="맨 위로">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+</nav>
 
 <footer class="site-footer">
   <div class="inner">
     <strong data-en="Office of International Affairs, Keimyung College University">계명문화대학교 국제처</strong>
     <p data-en="Welfare Hall 2F, 675 Dalseo-daero, Dalseo-gu, Daegu 42601<br>Counseling 053-589-7796 · Office 053-589-7794~5">(42601) 대구광역시 달서구 달서대로 675 복지관 2층<br>상담 053-589-7796 · 사무실 053-589-7794~5</p>
-    <p><a href="https://www.kmcu.ac.kr/global/?pCode=MN0000040" target="_blank" rel="noopener" data-en="Notices">공지사항</a> ·<a href="https://www.kmcu.ac.kr/global/" target="_blank" rel="noopener" data-en="KMCU International">국제처 홈페이지</a></p>
+    <p><a href="https://www.kmcu.ac.kr/global/?pCode=MN0000040" target="_blank" rel="noopener" data-en="Notices">공지사항</a> · <a href="https://www.kmcu.ac.kr/global/" target="_blank" rel="noopener" data-en="KMCU International">국제처 홈페이지</a></p>
   </div>
 </footer>
 
