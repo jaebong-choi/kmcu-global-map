@@ -129,7 +129,6 @@ table { border-collapse: collapse; width: 100%; }
 .step h3 { font-size: 18px; font-weight: 800; margin-bottom: 2px; }
 .step a { display: block; background: var(--card); border-radius: 10px; padding: 10px 12px; text-decoration: none; box-shadow: 0 1px 2px rgba(0, 0, 0, .06); }
 .step a b { display: block; font-size: 14.5px; font-weight: 600; }
-.step a span { display: block; font-size: 12.5px; color: var(--muted); }
 .step a:hover b { color: var(--green-d); }
 .note { margin: 24px 0 0; font-size: 13px; color: var(--muted); }
 

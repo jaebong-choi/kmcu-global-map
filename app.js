@@ -71,8 +71,7 @@
     [tx("기타", "Other"), tx("진학 · 국제협력", "Transfer · Cooperation"), PROGRAMS.filter((p) => !p.step)],
   ];
   $("#steps").innerHTML = groups.map(([label, title, list]) => `<div class="step"><span class="tag">${label}</span><h3>${esc(title)}</h3>
-      ${list.map((p) => { const sub = p.support || (p.campus ? tx("무료", "Free") : "");
-        return `<a href="${p.campus ? "#/c/kr" : "#/p/" + p.id}"><b>${esc(short(p))}</b>${sub ? `<span>${esc(sub)}</span>` : ""}</a>`; }).join("")}</div>`).join("");
+      ${list.map((p) => `<a href="${p.campus ? "#/c/kr" : "#/p/" + p.id}"><b>${esc(short(p))}</b></a>`).join("")}</div>`).join("");
 
   /* ---------- 빠른 찾기 (프로그램 / 국가) ---------- */
   const selP = $("#progSelect"), selC = $("#countrySelect");
