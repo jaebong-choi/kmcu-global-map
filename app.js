@@ -65,30 +65,14 @@
   // 아메리카 대륙은 태평양 건너편(동쪽)에 그려지도록 경도 보정
   const W = ([lat, lng]) => [lat, lng < -30 ? lng + 360 : lng];
 
-  /* ---------- 숫자 띠 ---------- */
-  const destN = COUNTRIES.filter(isDest).length, pastN = COUNTRIES.filter((c) => c.status === "past").length;
-  const sentN = sum(historyRows(() => true)).toLocaleString();
-  $("#statProg").textContent = tx(`${PROGRAMS.length}개`, PROGRAMS.length);
-  $("#statCountry").textContent = tx(`${destN}개국`, destN);
-  $("#statSent").textContent = tx(`${sentN}명`, sentN);
-  $("#statPast").textContent = tx(`과거 파견 국가 ${pastN}개국 별도`, `Plus ${pastN} past destinations`);
-
-  /* ---------- 단계별 프로그램 카드 + 탭 ---------- */
-  const href = (p) => (p.campus ? "#/c/kr" : "#/p/" + p.id);
-  $("#progCards").innerHTML = PROGRAMS.map((p) => `<a class="pcard s${p.step}" href="${href(p)}" data-step="${p.step}">
-      <div class="visual"><strong>${esc(p.name)}</strong>
-        <span class="flags">${p.countries.map((c) => `<img src="${flag(C[c], 80)}" alt="${esc(C[c].ko)}">`).join("")}</span>
-        <span class="plus" aria-hidden="true">+</span></div>
-      <div class="meta"><span class="tag">${p.step ? `STEP ${p.step} · ` : ""}${esc(stepName(p))}</span>${p.support ? `<b>${esc(p.support)}</b>` : ""}</div>
-      <p>${esc(p.tagline)}</p></a>`).join("");
-
-  const tabs = [["all", tx("전체", "All")], ...STEPS.map((s) => [String(s.n), `STEP ${s.n} ${s.title}`]), ["0", tx("기타", "Other")]];
-  $("#stepTabs").innerHTML = tabs.map(([k, label], i) => `<button type="button" data-tab="${k}" aria-pressed="${!i}"${i ? "" : ' class="on"'}>${esc(label)}</button>`).join("");
-  $("#stepTabs").addEventListener("click", (e) => {
-    const b = e.target.closest("button"); if (!b) return;
-    $("#stepTabs").querySelectorAll("button").forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", x === b); });
-    document.querySelectorAll(".pcard").forEach((c) => (c.hidden = b.dataset.tab !== "all" && c.dataset.step !== b.dataset.tab));
-  });
+  /* ---------- 단계별 프로그램 (단계마다 한 칸) ---------- */
+  const groups = [
+    ...STEPS.map((s) => [`STEP ${s.n}`, s.title, PROGRAMS.filter((p) => p.step === s.n)]),
+    [tx("기타", "Other"), tx("진학 · 국제협력", "Transfer · Cooperation"), PROGRAMS.filter((p) => !p.step)],
+  ];
+  $("#steps").innerHTML = groups.map(([label, title, list]) => `<div class="step"><span class="tag">${label}</span><h3>${esc(title)}</h3>
+      ${list.map((p) => { const sub = p.support || (p.campus ? tx("무료", "Free") : "");
+        return `<a href="${p.campus ? "#/c/kr" : "#/p/" + p.id}"><b>${esc(short(p))}</b>${sub ? `<span>${esc(sub)}</span>` : ""}</a>`; }).join("")}</div>`).join("");
 
   /* ---------- 빠른 찾기 (프로그램 / 국가) ---------- */
   const selP = $("#progSelect"), selC = $("#countrySelect");
